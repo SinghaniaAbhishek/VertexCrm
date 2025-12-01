@@ -618,30 +618,30 @@ if (stages.length > 0) {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#fff] rounded-2xl p-8 text-white shadow-xl"
+        className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl p-8 text-white shadow-xl border border-slate-800"
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-[#000]">
+            <h1 className="text-3xl font-bold mb-2 text-white">
               {role === 'Admin'
                 ? `Admin control center, ${user?.name || ''}`
                 : role === 'Manager'
                 ? `Team performance, ${user?.name || ''}`
                 : `Your sales cockpit, ${user?.name || ''}`}
             </h1>
-            <p className="text-text text-lg">
+            <p className="text-slate-200 text-lg max-w-2xl">
               {role === 'Admin'
-                ? "Monitor your entire organization, users, and settings at a glance"
+                ? "Monitor your entire organization, users, and settings at a glance."
                 : role === 'Manager'
-                ? "See how your team is performing across leads and deals"
-                : "Track your personal pipeline and activities in one place"}
+                ? "See how your team is performing across leads and deals."
+                : "Track your personal pipeline and activities in one place."}
             </p>
           </div>
           <div className="hidden md:block">
-            <div className="bg-[#004E92] backdrop-blur-sm rounded-xl p-6 border border-primary-300">
-              <div className="text-center">
+            <div className="bg-gradient-to-br from-sky-500 via-indigo-500 to-blue-700 backdrop-blur-sm rounded-xl p-6 border border-white/10 shadow-lg">
+              <div className="text-center text-white">
                 <div className="text-2xl font-bold">{new Date().toLocaleDateString()}</div>
-                <div className="text-primary-100 text-sm">Today</div>
+                <div className="text-slate-100 text-sm">Today</div>
               </div>
             </div>
           </div>
@@ -847,8 +847,8 @@ if (stages.length > 0) {
                   className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all duration-200 hover:scale-105"
                 >
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center shadow-sm">
-                      <Activity className="h-5 w-5 text-primary-600" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-sky-50 to-indigo-100 rounded-full flex items-center justify-center shadow-sm">
+                      <Activity className="h-5 w-5 text-indigo-600" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">

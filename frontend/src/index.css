@@ -24,9 +24,9 @@
     @apply inline-flex p-3 items-center justify-center rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-white shadow-sm hover:shadow-md hover:scale-[1.01];
   }
   
-  /* Primary: solid black button */
+  /* Primary: gradient brand button */
   .btn-primary {
-    @apply bg-[#004E92] text-white hover:bg-[#4DA3FF] active:bg-[#004E92] hover:shadow-lg;
+    @apply bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 text-white hover:from-indigo-600 hover:to-sky-600 active:from-sky-700 active:to-indigo-700 hover:shadow-lg;
   }
   
   /* Secondary: white with black border */
@@ -35,7 +35,7 @@
   }
   
   .btn-success {
-    @apply bg-[#004E92] text-white hover:bg-[#4DA3FF] active:bg-[#004E92];
+    @apply bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700;
   }
   
   /* Danger: visually same palette but can be styled differently later */
@@ -140,7 +140,7 @@
   }
   
 .sidebar {
-    @apply min-h-screen bg-white border-r border-borderSubtle text-text;
+    @apply min-h-screen bg-slate-950 text-white border-r border-borderSubtle/10;
   }
   
   .main-content {
@@ -148,7 +148,7 @@
   }
   
   .navbar {
-    @apply bg-white border-b border-borderSubtle shadow-sm text-text;
+    @apply bg-white/80 backdrop-blur border-b border-borderSubtle shadow-sm text-text;
   }
   
   .navbar-brand {

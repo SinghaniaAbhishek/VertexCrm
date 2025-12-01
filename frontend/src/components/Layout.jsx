@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import logo from '../assets/logo.png';
 
 function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -52,16 +51,18 @@ function Layout({ children }) {
       // initial={{ x: -300 }}
       // animate={{ x: 0 }}
       // exit={{ x: 100 }}
-      className="fixed inset-y-0 left-0 z-50 w-64 bg-[#004E92] text-text shadow-xl border-r border-borderSubtle lg:static lg:inset-0 lg:z-auto"
+      className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 text-white shadow-xl border-r border-borderSubtle/10 lg:static lg:inset-0 lg:z-auto"
     >
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center justify-between px-6 border-b border-borderSubtle bg-white">
           <div className="flex items-center space-x-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black shadow-lg">
-              <img src={logo} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 via-indigo-500 to-blue-700 text-white font-semibold shadow-md">
+              <span className="text-sm tracking-tight">VC</span>
             </div>
-            <span className="text-2xl font-bold text-black">CRUXCRM</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">
+              VERTEXCRM
+            </span>
           </div>
             <button
             onClick={() => setSidebarOpen(false)}
@@ -85,8 +86,8 @@ function Layout({ children }) {
                 }}
                 className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-150 ${
                   isActive(item.href)
-                    ? 'bg-[#fff] text-[#004E92] border-r-2 border-[#4DA3FF] shadow-sm'
-                    : 'text-side hover:text-text hover:bg-gray-100'
+                    ? 'bg-white text-slate-900 border-l-4 border-indigo-500 shadow-sm'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Icon className="mr-3 h-5 w-5" />
@@ -112,8 +113,8 @@ function Layout({ children }) {
                     }}
                     className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-150 ${
                       isActive(item.href)
-                        ? 'bg-[#fff] text-[#004E92] border-r-2 border-[#004E92] shadow-sm'
-                        : 'text-side hover:text-text hover:bg-gray-100'
+                        ? 'bg-white text-slate-900 border-l-4 border-indigo-500 shadow-sm'
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon className="mr-3 h-5 w-5" />
@@ -137,8 +138,8 @@ function Layout({ children }) {
                 }}
                 className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-150 ${
                   isActive('/')
-                    ? 'bg-[#fff] text-[#004E92] border-r-2 border-[#4DA3FF] shadow-sm'
-                    : 'text-side hover:text-text hover:bg-gray-100'
+                    ? 'bg-white text-slate-900 border-l-4 border-indigo-500 shadow-sm'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <LayoutDashboard className="mr-3 h-5 w-5" />
@@ -149,7 +150,7 @@ function Layout({ children }) {
         </nav>
 
         {/* User Profile */}
-        <div className="border-t border-borderSubtle/40 p-4 bg-white">
+        <div className="border-t border-white/10 p-4 bg-slate-900/80">
           <div className="flex items-center space-x-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 shadow-sm">
               <span className="text-lg font-medium text-text">

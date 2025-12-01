@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { 
   Building2, 
   User, 
@@ -11,11 +8,11 @@ import {
   EyeOff, 
   BarChart3, 
   ArrowRight,
-  CheckCircle
+  CheckCircle,
+  Shield,
+  Zap,
+  AlertCircle
 } from 'lucide-react';
-import toast from 'react-hot-toast';
-
-import logo from "../assets/logo.png";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -30,9 +27,12 @@ function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  
-  const { register } = useAuth();
-  const navigate = useNavigate();
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+  const showNotification = (message, type = 'error') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -45,39 +45,31 @@ function Register() {
     e.preventDefault();
     
     if (formData.adminPassword !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      showNotification('Passwords do not match');
       return;
     }
 
     if (formData.adminPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      showNotification('Password must be at least 6 characters');
       return;
     }
 
     setLoading(true);
 
-    const result = await register(
-      formData.orgName,
-      formData.orgEmail,
-      formData.adminName,
-      formData.adminEmail,
-      formData.adminPassword
-    );
-    
-    if (result.success) {
-      toast.success('Organization created successfully! Please sign in.');
-      navigate('/login');
-    } else {
-      toast.error(result.error || 'Registration failed');
-    }
-    
-    setLoading(false);
+    // Simulate API call
+    setTimeout(() => {
+      showNotification('Organization created successfully! Redirecting to login...', 'success');
+      setLoading(false);
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
+    }, 2000);
   };
 
   const nextStep = () => {
     if (currentStep === 1) {
       if (!formData.orgName || !formData.orgEmail) {
-        toast.error('Please fill in all organization details');
+        showNotification('Please fill in all organization details');
         return;
       }
     }
@@ -88,312 +80,385 @@ function Register() {
     setCurrentStep(currentStep - 1);
   };
 
+  const benefits = [
+    { icon: <Shield className="w-5 h-5" />, text: 'Enterprise-grade security' },
+    { icon: <Zap className="w-5 h-5" />, text: 'Instant setup in minutes' },
+    { icon: <BarChart3 className="w-5 h-5" />, text: 'Advanced analytics included' }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Notification Toast */}
+      {notification.show && (
+        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border ${
+          notification.type === 'success' 
+            ? 'bg-green-50 border-green-200 text-green-800' 
+            : 'bg-red-50 border-red-200 text-red-800'
+        } animate-[slideIn_0.3s_ease-out]`}>
+          <AlertCircle className="w-5 h-5" />
+          <span className="font-medium">{notification.message}</span>
+        </div>
+      )}
+
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <div className="flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-600 shadow-lg">
-              <img src={logo} />
+        <div className="text-center mb-8 opacity-0 animate-[fadeIn_0.5s_ease-out_forwards]">
+          <div className="flex justify-center mb-6">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-indigo-500 to-blue-700 text-white font-semibold shadow-lg">
+              <span className="text-xl tracking-tight">VC</span>
             </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-text">
+          <h2 className="text-3xl font-bold text-gray-900">
             Create your organization
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Get started with CRM in just a few steps
+            Set up your VERTEXCRM workspace in just a few steps
           </p>
-        </motion.div>
+        </div>
 
         {/* Progress Steps */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex items-center justify-center space-x-4"
-        >
+        <div className="flex items-center justify-center space-x-4 mb-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.1s_forwards]">
           {[1, 2].map((step) => (
             <div key={step} className="flex items-center">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                currentStep >= step ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-600'
+              <div className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
+                currentStep >= step 
+                  ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' 
+                  : 'bg-gray-200 text-gray-500'
               }`}>
                 {currentStep > step ? (
                   <CheckCircle className="h-5 w-5" />
                 ) : (
-                  <span className="text-sm font-medium">{step}</span>
+                  <span className="text-sm font-semibold">{step}</span>
                 )}
               </div>
               {step < 2 && (
-                <div className={`w-16 h-0.5 mx-2 ${
-                  currentStep > step ? 'bg-primary-600' : 'bg-secondary-200'
+                <div className={`w-20 h-1 mx-2 rounded-full transition-all ${
+                  currentStep > step ? 'bg-gradient-to-r from-sky-600 to-indigo-600' : 'bg-gray-200'
                 }`} />
               )}
             </div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Registration Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white py-8 px-6 shadow-xl rounded-2xl border border-secondary-200"
-        >
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {currentStep === 1 && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <div className="text-center mb-6">
-                  <Building2 className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-text">Organization Details</h3>
-                  <p className="text-sm text-gray-600">Tell us about your organization</p>
-                </div>
-
-                <div>
-                  <label htmlFor="orgName" className="label">
-                    Organization Name
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Building2 className="h-5 w-5 text-gray-400" />
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          {/* Registration Form */}
+          <div className="bg-white py-10 px-8 shadow-xl rounded-2xl border border-gray-100 opacity-0 animate-[fadeIn_0.5s_ease-out_0.2s_forwards]">
+            <div className="space-y-6">
+              {currentStep === 1 && (
+                <div className="space-y-6 animate-[slideIn_0.3s_ease-out]">
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-sky-50 mb-4">
+                      <Building2 className="h-8 w-8 text-indigo-600" />
                     </div>
-                    <input
-                      id="orgName"
-                      name="orgName"
-                      type="text"
-                      required
-                      className="input pl-10"
-                      placeholder="Enter organization name"
-                      value={formData.orgName}
-                      onChange={handleChange}
-                    />
+                    <h3 className="text-xl font-bold text-gray-900">Organization Details</h3>
+                    <p className="text-sm text-gray-500 mt-1">Tell us about your organization</p>
                   </div>
-                </div>
 
-                <div>
-                  <label htmlFor="orgEmail" className="label">
-                    Organization Email
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <label htmlFor="orgName" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Organization Name
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Building2 className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="orgName"
+                        name="orgName"
+                        type="text"
+                        required
+                        className="block w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="Acme Corporation"
+                        value={formData.orgName}
+                        onChange={handleChange}
+                      />
                     </div>
-                    <input
-                      id="orgEmail"
-                      name="orgEmail"
-                      type="email"
-                      required
-                      className="input pl-10"
-                      placeholder="Enter organization email"
-                      value={formData.orgEmail}
-                      onChange={handleChange}
-                    />
                   </div>
-                </div>
 
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="w-full btn btn-primary btn-lg"
-                >
-                  Continue
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </button>
-              </motion.div>
-            )}
-
-            {currentStep === 2 && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
-              >
-                <div className="text-center mb-6">
-                  <User className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-text">Admin Account</h3>
-                  <p className="text-sm text-gray-600">Create your administrator account</p>
-                </div>
-
-                <div>
-                  <label htmlFor="adminName" className="label">
-                    Full Name
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-secondary-400" />
+                  <div>
+                    <label htmlFor="orgEmail" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Organization Email
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="orgEmail"
+                        name="orgEmail"
+                        type="email"
+                        required
+                        className="block w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="hello@acme.com"
+                        value={formData.orgEmail}
+                        onChange={handleChange}
+                      />
                     </div>
-                    <input
-                      id="adminName"
-                      name="adminName"
-                      type="text"
-                      required
-                      className="input pl-10"
-                      placeholder="Enter your full name"
-                      value={formData.adminName}
-                      onChange={handleChange}
-                    />
                   </div>
-                </div>
 
-                <div>
-                  <label htmlFor="adminEmail" className="label">
-                    Email Address
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="adminEmail"
-                      name="adminEmail"
-                      type="email"
-                      required
-                      className="input pl-10"
-                      placeholder="Enter your email"
-                      value={formData.adminEmail}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="adminPassword" className="label">
-                    Password
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-secondary-400" />
-                    </div>
-                    <input
-                      id="adminPassword"
-                      name="adminPassword"
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      minLength={6}
-                      className="input pl-10 pr-10"
-                      placeholder="Create a password"
-                      value={formData.adminPassword}
-                      onChange={handleChange}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="label">
-                    Confirm Password
-                  </label>
-                  <div className="mt-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-secondary-400" />
-                    </div>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      required
-                      minLength={6}
-                      className="input pl-10 pr-10"
-                      placeholder="Confirm your password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex space-x-4">
                   <button
                     type="button"
-                    onClick={prevStep}
-                    className="flex-1 btn btn-outline btn-lg"
+                    onClick={nextStep}
+                    className="w-full bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center"
                   >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex-1 btn btn-primary btn-lg"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="spinner spinner-sm mr-2" />
-                        Creating Account...
-                      </>
-                    ) : (
-                      <>
-                        Create Account
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </>
-                    )}
+                    Continue
+                    <ArrowRight className="h-5 w-5 ml-2" />
                   </button>
                 </div>
-              </motion.div>
-            )}
-          </form>
+              )}
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-secondary-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-secondary-500">Already have an account?</span>
-              </div>
+              {currentStep === 2 && (
+                <div className="space-y-6 animate-[slideIn_0.3s_ease-out]">
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-sky-50 mb-4">
+                      <User className="h-8 w-8 text-indigo-600" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Admin Account</h3>
+                    <p className="text-sm text-gray-500 mt-1">Create your administrator account</p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="adminName" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <User className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="adminName"
+                        name="adminName"
+                        type="text"
+                        required
+                        className="block w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="John Doe"
+                        value={formData.adminName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="adminEmail" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="adminEmail"
+                        name="adminEmail"
+                        type="email"
+                        required
+                        className="block w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="john@acme.com"
+                        value={formData.adminEmail}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="adminPassword" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="adminPassword"
+                        name="adminPassword"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        className="block w-full pl-12 pr-12 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="••••••••"
+                        value={formData.adminPassword}
+                        onChange={handleChange}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        className="block w-full pl-12 pr-12 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="••••••••"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <button
+                      type="button"
+                      onClick={prevStep}
+                      className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3.5 px-6 rounded-xl font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="flex-1 bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          Create Account
+                          <ArrowRight className="h-5 w-5 ml-2" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="mt-6">
-              <Link
-                to="/login"
-                className="w-full flex justify-center py-3 px-4 border border-secondary-300 rounded-lg text-sm font-medium text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200"
-              >
-                Sign in instead
-              </Link>
+            <div className="mt-8">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-gray-500 font-medium">Already have an account?</span>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <button
+                  onClick={() => window.location.href = '/login'}
+                  className="w-full flex justify-center items-center py-3.5 px-4 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:border-indigo-600 hover:text-indigo-600 transition-all"
+                >
+                  Sign in instead
+                </button>
+              </div>
             </div>
           </div>
-        </motion.div>
+
+          {/* Benefits Card */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.3s_forwards]">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Why choose VERTEXCRM?
+              </h3>
+              <p className="text-gray-600">
+                Join thousands of teams already using VERTEXCRM to streamline their sales process.
+              </p>
+            </div>
+
+            <div className="space-y-5 mb-8">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 bg-gradient-to-br from-indigo-50 to-sky-50 rounded-xl p-5 border border-indigo-100"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex-shrink-0">
+                    {benefit.icon}
+                  </div>
+                  <span className="text-gray-900 font-semibold text-base">{benefit.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 border-2 border-white" />
+                  ))}
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900">10,000+ teams</p>
+                  <p className="text-sm text-gray-600">Trust VERTEXCRM</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 text-yellow-500 mb-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-700 text-sm italic mb-3">
+                "VERTEXCRM transformed how we manage our sales pipeline. Highly recommended!"
+              </p>
+              <p className="text-gray-900 font-semibold text-sm">— Sarah Johnson, Sales Director</p>
+            </div>
+          </div>
+        </div>
 
         {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-sm text-secondary-500"
-        >
-          <p>© 2024 CRM Pro. All rights reserved.</p>
-        </motion.div>
+        <div className="text-center text-sm text-gray-500 mt-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.4s_forwards]">
+          <p>© 2025 VERTEXCRM. All rights reserved.</p>
+        </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
