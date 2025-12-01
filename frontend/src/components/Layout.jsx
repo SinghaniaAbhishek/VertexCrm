@@ -61,7 +61,7 @@ function Layout({ children }) {
               <span className="text-sm tracking-tight">VC</span>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">
-              VERTEXCRM
+              VertexCRM
             </span>
           </div>
             <button

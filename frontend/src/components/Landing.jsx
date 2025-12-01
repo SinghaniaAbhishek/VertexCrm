@@ -71,7 +71,7 @@ const Landing = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 via-indigo-500 to-blue-700 text-white font-semibold shadow-md">
               <span className="text-sm tracking-tight">VC</span>
             </div>
-            <span className="font-['Space_Grotesk',sans-serif] text-2xl font-bold bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">VERTEXCRM</span>
+            <span className="font-['Space_Grotesk',sans-serif] text-2xl font-bold bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">VertexCRM</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -110,7 +110,7 @@ const Landing = () => {
             Supercharge Your Sales Pipeline
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed" data-testid="hero-subtitle">
-            VERTEXCRM brings every lead, account, and deal into one clean workspace so your team can
+            VertexCRM brings every lead, account, and deal into one clean workspace so your team can
             focus on closing more revenue—not managing spreadsheets.
           </p>
 
@@ -264,7 +264,7 @@ const Landing = () => {
       <footer className="bg-gray-900 text-white py-12 px-8" data-testid="footer">
         <div className="max-w-7xl mx-auto grid md:grid-cols-[2fr_3fr] gap-16 mb-8">
           <div className="flex flex-col gap-4">
-            <span className="font-['Space_Grotesk',sans-serif] text-2xl font-bold">VERTEXCRM</span>
+            <span className="font-['Space_Grotesk',sans-serif] text-2xl font-bold">VertexCRM</span>
             <p className="text-gray-400 text-[15px]">Simplify Customer Success.</p>
           </div>
 
@@ -291,7 +291,7 @@ const Landing = () => {
         </div>
 
         <div className="max-w-7xl mx-auto pt-8 border-t border-gray-700 text-center text-gray-400 text-sm">
-          <p>&copy; 2025 VERTEXCRM. All rights reserved.</p>
+          <p>&copy; 2025 VertexCRM. All rights reserved.</p>
         </div>
       </footer>
     </div>
