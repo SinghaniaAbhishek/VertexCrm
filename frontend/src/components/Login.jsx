@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Mail, 
   Lock, 
@@ -11,8 +12,11 @@ import {
   Zap,
   TrendingUp
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -80,13 +84,24 @@ function Login() {
     
     setLoading(true);
 
-    setTimeout(() => {
-      showNotification('Welcome back!', 'success');
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        showNotification('Welcome back!', 'success');
+        // Redirect to dashboard after showing success notification
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      } else {
+        setLoading(false);
+        showNotification(result.error || 'Login failed', 'error');
+      }
+    } catch (error) {
       setLoading(false);
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1500);
-    }, 2000);
+      showNotification('An error occurred during login', 'error');
+      console.error('Login error:', error);
+    }
   };
 
   const features = [

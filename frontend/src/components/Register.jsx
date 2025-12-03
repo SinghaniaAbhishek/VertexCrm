@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Building2, 
   User, 
@@ -13,8 +14,11 @@ import {
   Zap,
   AlertCircle
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 function Register() {
+  const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     orgName: '',
     orgEmail: '',
@@ -56,13 +60,29 @@ function Register() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      showNotification('Organization created successfully! Redirecting to login...', 'success');
+    try {
+      const result = await register(
+        formData.orgName,
+        formData.orgEmail,
+        formData.adminName,
+        formData.adminEmail,
+        formData.adminPassword
+      );
+
+      if (result.success) {
+        showNotification('Organization created successfully! Redirecting to login...', 'success');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
+      } else {
+        setLoading(false);
+        showNotification(result.error || 'Registration failed', 'error');
+      }
+    } catch (error) {
       setLoading(false);
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 1500);
-    }, 2000);
+      showNotification('An error occurred during registration', 'error');
+      console.error('Registration error:', error);
+    }
   };
 
   const nextStep = () => {

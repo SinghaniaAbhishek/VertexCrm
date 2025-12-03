@@ -128,6 +128,28 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerOrganization(@Valid @RequestBody OrganizationRegistrationRequest request) {
         try {
+            // Validate request fields
+            if (request.getOrgName() == null || request.getOrgName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Organization name is required"));
+            }
+            if (request.getOrgEmail() == null || request.getOrgEmail().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Organization email is required"));
+            }
+            if (request.getAdminName() == null || request.getAdminName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Admin name is required"));
+            }
+            if (request.getAdminEmail() == null || request.getAdminEmail().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Admin email is required"));
+            }
+            if (request.getAdminPassword() == null || request.getAdminPassword().length() < 6) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Password must be at least 6 characters"));
+            }
+
+            // Check if admin email already exists
+            if (memberRepository.existsByEmail(request.getAdminEmail())) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Email already registered. Please use a different email."));
+            }
+
             // Create organization
             OrganizationDto orgDto = new OrganizationDto();
             orgDto.setOrgName(request.getOrgName());
@@ -148,10 +170,47 @@ public class AuthController {
             memberDto.setRoleId(adminRoleId);
             MemberDto createdMember = memberService.createMember(memberDto);
             
-            return ResponseEntity.ok("Organization and admin user created successfully");
+            logger.info("New organization and admin user created successfully - Org: {}, Admin: {}", 
+                       createdOrg.getOrgId(), createdMember.getEmail());
+            
+            // Return success response with user info for auto-login if desired
+            return ResponseEntity.ok(new RegistrationResponse(
+                "Organization and admin user created successfully",
+                createdMember.getEmail(),
+                createdOrg.getOrgId()
+            ));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            logger.error("Registration error: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ErrorResponse("Registration failed: " + e.getMessage()));
         }
+    }
+    
+    // Helper class for registration response
+    public static class RegistrationResponse {
+        private String message;
+        private String adminEmail;
+        private Long orgId;
+        
+        public RegistrationResponse(String message, String adminEmail, Long orgId) {
+            this.message = message;
+            this.adminEmail = adminEmail;
+            this.orgId = orgId;
+        }
+        
+        public String getMessage() { return message; }
+        public String getAdminEmail() { return adminEmail; }
+        public Long getOrgId() { return orgId; }
+    }
+    
+    // Helper class for error response
+    public static class ErrorResponse {
+        private String error;
+        
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+        
+        public String getError() { return error; }
     }
     
     // Inner class for registration request

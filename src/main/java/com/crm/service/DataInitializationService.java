@@ -28,82 +28,106 @@ public class DataInitializationService implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        initializeRoles();
-        initializeTestData();
+        try {
+            initializeRoles();
+            initializeTestData();
+        } catch (Exception e) {
+            System.err.println("Error during data initialization: " + e.getMessage());
+            e.printStackTrace();
+            // Don't rethrow - allow application to start even if initialization fails
+        }
     }
     
     private void initializeRoles() {
-        if (roleRepository.count() == 0) {
-            // Create default roles
-            Role adminRole = new Role("Admin");
-            Role managerRole = new Role("Manager");
-            Role salesRepRole = new Role("Sales Rep");
-            Role userRole = new Role("User");
-            
-            roleRepository.save(adminRole);
-            roleRepository.save(managerRole);
-            roleRepository.save(salesRepRole);
-            roleRepository.save(userRole);
-            
-            System.out.println("Default roles initialized successfully");
+        try {
+            if (roleRepository.count() == 0) {
+                // Create default roles
+                Role adminRole = new Role("Admin");
+                Role managerRole = new Role("Manager");
+                Role salesRepRole = new Role("Sales Rep");
+                Role userRole = new Role("User");
+                
+                roleRepository.save(adminRole);
+                roleRepository.save(managerRole);
+                roleRepository.save(salesRepRole);
+                roleRepository.save(userRole);
+                
+                System.out.println("Default roles initialized successfully");
+            }
+        } catch (Exception e) {
+            System.err.println("Error during role initialization: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
     private void initializeTestData() {
-        // Create test organization if it doesn't exist
-        if (organizationRepository.count() == 0) {
-            Organization testOrg = new Organization();
-            testOrg.setOrgName("Test Organization");
-            testOrg.setOrgEmail("admin@testorg.com");
-            organizationRepository.save(testOrg);
-            
-            System.out.println("Test organization created successfully");
-        }
-        
-        // Create test users if none exist
-        if (memberRepository.count() == 0) {
-            // Get the first organization and roles
-            Organization testOrg = organizationRepository.findAll().get(0);
-            Role adminRole = roleRepository.findByRoleName("Admin").orElse(null);
-            Role managerRole = roleRepository.findByRoleName("Manager").orElse(null);
-            Role salesRepRole = roleRepository.findByRoleName("Sales Rep").orElse(null);
-            
-            if (testOrg != null && adminRole != null && managerRole != null && salesRepRole != null) {
-                // Admin user
-                Member adminUser = new Member();
-                adminUser.setName("Test Admin");
-                adminUser.setEmail("admin@test.com");
-                adminUser.setPassword(passwordEncoder.encode("password123"));
-                adminUser.setStatus(Member.MemberStatus.ACTIVE);
-                adminUser.setOrganization(testOrg);
-                adminUser.setRole(adminRole);
-                memberRepository.save(adminUser);
+        try {
+            // Create test organization if it doesn't exist
+            if (organizationRepository.count() == 0) {
+                Organization testOrg = new Organization();
+                testOrg.setOrgName("Test Organization");
+                testOrg.setOrgEmail("admin@testorg.com");
+                organizationRepository.save(testOrg);
                 
-                // Manager user
-                Member managerUser = new Member();
-                managerUser.setName("Test Manager");
-                managerUser.setEmail("manager@test.com");
-                managerUser.setPassword(passwordEncoder.encode("password123"));
-                managerUser.setStatus(Member.MemberStatus.ACTIVE);
-                managerUser.setOrganization(testOrg);
-                managerUser.setRole(managerRole);
-                memberRepository.save(managerUser);
-                
-                // Sales Rep user
-                Member salesRepUser = new Member();
-                salesRepUser.setName("Test Sales Rep");
-                salesRepUser.setEmail("sales@test.com");
-                salesRepUser.setPassword(passwordEncoder.encode("password123"));
-                salesRepUser.setStatus(Member.MemberStatus.ACTIVE);
-                salesRepUser.setOrganization(testOrg);
-                salesRepUser.setRole(salesRepRole);
-                memberRepository.save(salesRepUser);
-                
-                System.out.println("Test users created successfully:");
-                System.out.println("Admin   -> Email: admin@test.com  Password: password123");
-                System.out.println("Manager -> Email: manager@test.com Password: password123");
-                System.out.println("Sales   -> Email: sales@test.com   Password: password123");
+                System.out.println("Test organization created successfully");
             }
+            
+            // Create test users if none exist
+            if (memberRepository.count() == 0) {
+                // Get the first organization and roles with proper null checking
+                var organizations = organizationRepository.findAll();
+                if (organizations.isEmpty()) {
+                    System.err.println("No organization found. Cannot initialize test users.");
+                    return;
+                }
+                
+                Organization testOrg = organizations.get(0);
+                Role adminRole = roleRepository.findByRoleName("Admin").orElse(null);
+                Role managerRole = roleRepository.findByRoleName("Manager").orElse(null);
+                Role salesRepRole = roleRepository.findByRoleName("Sales Rep").orElse(null);
+                
+                if (testOrg != null && adminRole != null && managerRole != null && salesRepRole != null) {
+                    // Admin user
+                    Member adminUser = new Member();
+                    adminUser.setName("Test Admin");
+                    adminUser.setEmail("admin@test.com");
+                    adminUser.setPassword(passwordEncoder.encode("password123"));
+                    adminUser.setStatus(Member.MemberStatus.ACTIVE);
+                    adminUser.setOrganization(testOrg);
+                    adminUser.setRole(adminRole);
+                    memberRepository.save(adminUser);
+                    
+                    // Manager user
+                    Member managerUser = new Member();
+                    managerUser.setName("Test Manager");
+                    managerUser.setEmail("manager@test.com");
+                    managerUser.setPassword(passwordEncoder.encode("password123"));
+                    managerUser.setStatus(Member.MemberStatus.ACTIVE);
+                    managerUser.setOrganization(testOrg);
+                    managerUser.setRole(managerRole);
+                    memberRepository.save(managerUser);
+                    
+                    // Sales Rep user
+                    Member salesRepUser = new Member();
+                    salesRepUser.setName("Test Sales Rep");
+                    salesRepUser.setEmail("sales@test.com");
+                    salesRepUser.setPassword(passwordEncoder.encode("password123"));
+                    salesRepUser.setStatus(Member.MemberStatus.ACTIVE);
+                    salesRepUser.setOrganization(testOrg);
+                    salesRepUser.setRole(salesRepRole);
+                    memberRepository.save(salesRepUser);
+                    
+                    System.out.println("Test users created successfully:");
+                    System.out.println("Admin   -> Email: admin@test.com  Password: password123");
+                    System.out.println("Manager -> Email: manager@test.com Password: password123");
+                    System.out.println("Sales   -> Email: sales@test.com   Password: password123");
+                } else {
+                    System.err.println("Cannot initialize test users: Missing required roles or organization");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error during test data initialization: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

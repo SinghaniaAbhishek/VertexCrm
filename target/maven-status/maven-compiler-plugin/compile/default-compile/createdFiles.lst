@@ -3,6 +3,7 @@ com\crm\dto\LoginRequest.class
 com\crm\entity\Organization.class
 com\crm\controller\RoleAccessController.class
 com\crm\controller\RoleController.class
+com\crm\controller\AuthController$ErrorResponse.class
 com\crm\entity\Lead.class
 com\crm\service\AccountService.class
 com\crm\service\SimpleAuthService.class
@@ -32,6 +33,7 @@ com\crm\config\GlobalExceptionHandler.class
 com\crm\entity\Account.class
 com\crm\controller\LeadController.class
 com\crm\controller\ActivityController.class
+com\crm\controller\AuthController$RegistrationResponse.class
 com\crm\service\EmailService.class
 com\crm\config\JwtConfig.class
 com\crm\dto\JwtResponse.class

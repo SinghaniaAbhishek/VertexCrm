@@ -22,9 +22,9 @@ spring:
           writetimeout: 5000
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/VertexCRM
-    username: postgres
-    password: root
+    url: jdbc:postgresql://localhost:5432/vertexcrm
+    username: crm_user
+    password: crm_password
     driver-class-name: org.postgresql.Driver
   
   jpa:

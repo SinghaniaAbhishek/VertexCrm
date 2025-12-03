@@ -75,7 +75,19 @@ export function AuthProvider({ children }) {
 
       return { success: true, data: response.data };
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Registration failed' };
+      // Handle both string and object error responses
+      let errorMessage = 'Registration failed';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (typeof error.response?.data === 'string') {
+        errorMessage = error.response.data;
+      }
+      
+      console.error('Registration error:', error);
+      return { success: false, error: errorMessage };
     }
   };
 
